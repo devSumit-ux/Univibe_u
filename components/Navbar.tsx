@@ -13,9 +13,11 @@ import Spinner from "./Spinner";
 import VerifiedBadge from "./VerifiedBadge";
 import ParentNavLinks from "./ParentNavLinks";
 import StudentNavLinks from "./StudentNavLinks";
-import FacultyNavLinks from "./FacultyNavLink";
+import FacultyNavLinks from "./FacultyNavLinks";
 import VeteranNavLinks from "./VeteranNavLinks";
 import { getRoleFromProfile } from "../pages/ProfilePage";
+
+type UserRole = "student" | "faculty" | "parent" | "veteran" | "unknown";
 import WebsiteLogo from "./WebsiteLogo";
 import VibeCoinLogo from "./VibeCoinLogo";
 
@@ -235,7 +237,8 @@ const ProfilePanel: React.FC<{
   profile: Profile;
   wallet: VibeCoinWallet | null;
   onClose: () => void;
-}> = ({ profile, wallet, onClose }) => {
+  userRole: UserRole;
+}> = ({ profile, wallet, onClose, userRole }) => {
   const [counts, setCounts] = useState<{
     followers: number;
     following: number;
@@ -381,6 +384,8 @@ const ProfilePanel: React.FC<{
                 ? "/edit-parent-profile"
                 : userRole === "faculty"
                 ? "/edit-faculty-profile"
+                : userRole === "veteran"
+                ? "/edit-profile" // You can customize this if you want a separate edit page for veterans
                 : "/edit-profile"
             )
           }
@@ -462,18 +467,22 @@ const ProfileDropdown: React.FC<{
   );
 };
 
+
 const Navbar: React.FC = () => {
   const { user, profile, signOut, subscription, wallet } = useAuth();
+  // User role logic must be above all usage
+  const userRole: UserRole = profile ? (getRoleFromProfile(profile) as UserRole) : "unknown";
+  const isParent = userRole === "parent";
+  const isFaculty = userRole === "faculty";
+  const isVeteran = userRole === "veteran";
+
   const navigate = useNavigate();
   const location = useLocation();
-  const [notifications, setNotifications] = useState<NotificationWithActor[]>(
-    []
-  );
+  const [notifications, setNotifications] = useState<NotificationWithActor[]>([]);
   const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isProfilePanelOpen, setIsProfilePanelOpen] = useState(false);
-  const [isMobileProfilePanelOpen, setIsMobileProfilePanelOpen] =
-    useState(false);
+  const [isMobileProfilePanelOpen, setIsMobileProfilePanelOpen] = useState(false);
   const [notifLoading, setNotifLoading] = useState(true);
 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -491,6 +500,9 @@ const Navbar: React.FC = () => {
   isNotifOpenRef.current = isNotifOpen;
   const isMobileNotifOpenRef = useRef(isMobileNotifOpen);
   isMobileNotifOpenRef.current = isMobileNotifOpen;
+
+  // User role logic must be above first usage
+  // (moved above, declared only once)
 
   const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -769,10 +781,7 @@ const Navbar: React.FC = () => {
         ? "bg-primary/10 text-primary"
         : "hover:bg-dark-card text-text-body"
     }`;
-  const userRole = getRoleFromProfile(profile);
-  const isParent = userRole === "parent";
-  const isFaculty = userRole === "faculty";
-  const isVeteran = userRole === "veteran";
+  // (moved above, declared only once)
 
   const mobileSearchLink = isParent
     ? "/suggestions"
@@ -802,6 +811,7 @@ const Navbar: React.FC = () => {
             profile={profile}
             wallet={wallet}
             onClose={() => setIsProfilePanelOpen(false)}
+            userRole={userRole}
           />
         </div>
       )}
@@ -821,6 +831,7 @@ const Navbar: React.FC = () => {
               profile={profile}
               wallet={wallet}
               onClose={() => setIsMobileProfilePanelOpen(false)}
+              userRole={userRole}
             />
           </div>
         </div>

@@ -1,9 +1,9 @@
 import React, { Suspense, lazy } from "react";
-import VeteranLogin from "./components/veteran/VeteranLogin";
-import VeteranProfile from "./components/veteran/VeteranProfile";
-import VeteranCommonRoom from "./components/veteran/VeteranCommonRoom";
-import VeteranAppointments from "./components/veteran/VeteranAppointments";
-import VeteranTutoringRequest from "./components/veteran/VeteranTutoringRequest";
+
+const VeteranProfilePage = lazy(() => import("./pages/VeteranProfilePage"));
+const VeteranCommonRoomPage = lazy(() => import("./pages/VeteranCommonRoomPage"));
+const VeteranAppointmentsPage = lazy(() => import("./pages/VeteranAppointmentsPage"));
+const VeteranTutoringRequestPage = lazy(() => import("./pages/VeteranTutoringRequestPage"));
 import {
   HashRouter as Router,
   Routes,
@@ -168,11 +168,10 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 {/* Veteran routes */}
-                <Route path="/veteran/login" element={<VeteranLogin onLogin={() => {}} />} />
-                <Route path="/veteran/profile" element={<VeteranProfile veteran={{}} />} />
-                <Route path="/veteran/common-room" element={<VeteranCommonRoom />} />
-                <Route path="/veteran/appointments" element={<VeteranAppointments veteran={{}} />} />
-                <Route path="/veteran/tutoring-request" element={<VeteranTutoringRequest user={{}} />} />
+                <Route path="/veteran/profile" element={<VeteranProfilePage />} />
+                <Route path="/veteran/common-room" element={<VeteranCommonRoomPage />} />
+                <Route path="/veteran/appointments" element={<VeteranAppointmentsPage />} />
+                <Route path="/veteran/tutoring-request" element={<VeteranTutoringRequestPage />} />
                 <Route path="/faculty-login" element={<FacultyLoginPage />} />
                 <Route
                   path="/faculty-coming-soon"
